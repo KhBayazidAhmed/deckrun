@@ -100,6 +100,23 @@ span.math-source {
   height: auto;
 }
 
+/* Slide themes set large inherited line-heights that leak into Mermaid's
+   foreignObject labels, pushing text below its box where it gets clipped
+   (letter bottoms sheared off). Neutralize the leak and center the label
+   inside the box Mermaid measured. */
+.mermaid svg foreignObject {
+  overflow: visible !important;
+}
+
+.mermaid svg foreignObject div {
+  line-height: 1.2 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .mermaid-error {
   color: var(--maroon, #f38ba8);
   background: var(--surface0, rgba(255, 0, 0, 0.1));
@@ -146,7 +163,8 @@ export const RICH_CONTENT_RUNTIME = `(function () {
         window.mermaid.initialize({
           startOnLoad: false,
           theme: 'dark',
-          securityLevel: 'loose'
+          securityLevel: 'loose',
+          flowchart: { useMaxWidth: true, htmlLabels: true }
         });
       } catch (e) {}
 
