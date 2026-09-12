@@ -46,7 +46,8 @@ const CANDIDATES: Record<string, string[]> = {
 
 /** Env overrides, checked before the well-known locations. */
 const ENV_KEYS = [
-  "DECKRUN_BROWSER",
+  "SLIDEUP_BROWSER",
+  "DECKRUN_BROWSER", // Backward compatibility with releases before the rename.
   "CHROME_PATH",
   "PUPPETEER_EXECUTABLE_PATH",
 ];
@@ -159,7 +160,7 @@ async function waitForPdf(
  * fallback font with plain code blocks.
  */
 export async function renderPdf(url: string, browser: string): Promise<Buffer> {
-  const dir = await mkdtemp(join(tmpdir(), "deckrun-pdf-"));
+  const dir = await mkdtemp(join(tmpdir(), "slideup-pdf-"));
   const out = join(dir, "deck.pdf");
 
   const args = [

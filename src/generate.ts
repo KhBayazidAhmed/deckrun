@@ -1423,7 +1423,7 @@ export function generateHtml(
   // them; they are never rendered into the deck itself.
   const notesJson = JSON.stringify(slides.map((s) => s.notes ?? "")).replace(/</g, "\\u003c");
 
-  const pageTitle = title ? (title.toLowerCase().includes("deckrun") ? title : `${title} · deckrun`) : "deckrun";
+  const pageTitle = title ? (title.toLowerCase().includes("slideup") ? title : `${title} · slideup`) : "slideup";
   return `<!DOCTYPE html>
 <html lang="en" data-theme="${theme}" data-decor="${decorOf(theme)}" data-template="${template}" data-transition="${transition}"${fontAttrs}>
 <head>
@@ -1489,7 +1489,7 @@ ${slideHtml}
       <button class="hud-btn" id="btn-help" title="Show every control (?)">? controls</button>
     </div>
     <div id="hud-right">
-      <a href="https://github.com/arpitbbhayani/deckrun" target="_blank" rel="noopener noreferrer" class="hud-brand" id="hud-brand" title="deckrun — Markdown presentations">powered by <span>deckrun</span></a>
+      <a href="https://github.com/arpitbbhayani/slideup" target="_blank" rel="noopener noreferrer" class="hud-brand" id="hud-brand" title="slideup — Markdown presentations">powered by <span>slideup</span></a>
       <div id="slide-counter"><span id="cur">1</span>&nbsp;/&nbsp;<span id="tot">${total}</span></div>
     </div>
   </div>
@@ -1505,12 +1505,12 @@ ${slideHtml}
     <div id="themes__head">
       <span class="th-head__title">themes</span>
       <span class="th-head__sub">Arrow keys preview live &nbsp;·&nbsp; enter selects &nbsp;·&nbsp; esc closes</span>
-      <a href="https://github.com/arpitbbhayani/deckrun" target="_blank" rel="noopener noreferrer" class="th-head__brand" title="deckrun">deckrun</a>
+      <a href="https://github.com/arpitbbhayani/slideup" target="_blank" rel="noopener noreferrer" class="th-head__brand" title="slideup">slideup</a>
       <button id="themes__close" data-close="themes" title="Close (Esc)">&times;</button>
     </div>
     <div id="themes__list"></div>
     <div id="themes__foot">
-      <span class="th-foot__brand">powered by <a href="https://github.com/arpitbbhayani/deckrun" target="_blank" rel="noopener noreferrer">deckrun</a></span>
+      <span class="th-foot__brand">powered by <a href="https://github.com/arpitbbhayani/slideup" target="_blank" rel="noopener noreferrer">slideup</a></span>
       <span class="th-foot__hint">Switch themes on the fly</span>
     </div>
   </div>
@@ -1527,7 +1527,7 @@ ${slideHtml}
     <div id="help__grid"></div>
     <div id="help__foot">
       <span>Annotations live per slide and survive navigation.</span>
-      <span>powered by <a href="https://github.com/arpitbbhayani/deckrun" target="_blank" rel="noopener noreferrer">deckrun</a></span>
+      <span>powered by <a href="https://github.com/arpitbbhayani/slideup" target="_blank" rel="noopener noreferrer">slideup</a></span>
     </div>
   </div>
 </div>
@@ -1578,8 +1578,8 @@ ${HIGHLIGHT_RUNTIME}
   const elPenBar   = document.getElementById('pen-bar');
   const elPenWidth = document.getElementById('pen-width');
 
-  if (window.deckrunPrepareFragments) {
-    window.deckrunPrepareFragments(document.getElementById('presentation'), false);
+  if (window.slideupPrepareFragments) {
+    window.slideupPrepareFragments(document.getElementById('presentation'), false);
   }
 
   const fragmentSteps = slides.map(() => 0);
@@ -1625,8 +1625,8 @@ ${HIGHLIGHT_RUNTIME}
     });
   }
 
-  const richReady = window.deckrunRenderRichContent
-    ? window.deckrunRenderRichContent(document.getElementById('presentation'))
+  const richReady = window.slideupRenderRichContent
+    ? window.slideupRenderRichContent(document.getElementById('presentation'))
     : Promise.resolve();
 
   // ── Session highlights ───────────────────────────────────────────────
@@ -1635,9 +1635,9 @@ ${HIGHLIGHT_RUNTIME}
   // opens with the same marks and comments already on the slides. Read-only
   // here: selecting text while presenting should not pop up "highlight" /
   // "highlight + comment" — that flow belongs to the editor's preview.
-  if (window.deckrunHighlights) {
+  if (window.slideupHighlights) {
     const hlParam = new URLSearchParams(location.search).get('hl');
-    window.deckrunHighlights.mount({
+    window.slideupHighlights.mount({
       doc: document,
       docKey: hlParam || 'default',
       scopes: 'slides',
@@ -1730,7 +1730,7 @@ ${HIGHLIGHT_RUNTIME}
   const psParam = new URLSearchParams(location.search).get('ps');
   const sid = (psParam && /^[A-Za-z0-9-]{1,64}$/.test(psParam)) ? psParam : null;
   const channel = (sid && typeof BroadcastChannel !== 'undefined')
-    ? new BroadcastChannel('deckrun:' + sid)
+    ? new BroadcastChannel('slideup:' + sid)
     : null;
 
   function post(msg) {
@@ -2203,7 +2203,7 @@ ${HIGHLIGHT_RUNTIME}
     }
     updateThemePenColors();
     if (remember !== false) {
-      try { localStorage.setItem('deckrun.theme.v1', id); } catch (e) {}
+      try { localStorage.setItem('slideup.theme.v1', id); } catch (e) {}
     }
     if (themeCards.length) {
       themeCards.forEach(function (card) {
@@ -2680,7 +2680,7 @@ export function generateDocHtml(
 ): string {
   const theme = resolveThemeName(themeInput);
 
-  const pageTitle = title ? (title.toLowerCase().includes("deckrun") ? title : `${title} · deckrun`) : "deckrun";
+  const pageTitle = title ? (title.toLowerCase().includes("slideup") ? title : `${title} · slideup`) : "slideup";
   return `<!DOCTYPE html>
 <html lang="en" data-theme="${theme}" data-decor="${decorOf(theme)}">
 <head>
@@ -2727,7 +2727,7 @@ ${PRESENTER_CSS}
       <button class="hud-btn" id="btn-help" title="Show every control (?)">? controls</button>
     </div>
     <div id="hud-right">
-      <a href="https://github.com/arpitbbhayani/deckrun" target="_blank" rel="noopener noreferrer" class="hud-brand" id="hud-brand" title="deckrun — Markdown presentations">powered by <span>deckrun</span></a>
+      <a href="https://github.com/arpitbbhayani/slideup" target="_blank" rel="noopener noreferrer" class="hud-brand" id="hud-brand" title="slideup — Markdown presentations">powered by <span>slideup</span></a>
     </div>
   </div>
 </div>
@@ -2742,12 +2742,12 @@ ${PRESENTER_CSS}
     <div id="themes__head">
       <span class="th-head__title">themes</span>
       <span class="th-head__sub">Arrow keys preview live &nbsp;·&nbsp; enter selects &nbsp;·&nbsp; esc closes</span>
-      <a href="https://github.com/arpitbbhayani/deckrun" target="_blank" rel="noopener noreferrer" class="th-head__brand" title="deckrun">deckrun</a>
+      <a href="https://github.com/arpitbbhayani/slideup" target="_blank" rel="noopener noreferrer" class="th-head__brand" title="slideup">slideup</a>
       <button id="themes__close" data-close="themes" title="Close (Esc)">&times;</button>
     </div>
     <div id="themes__list"></div>
     <div id="themes__foot">
-      <span class="th-foot__brand">powered by <a href="https://github.com/arpitbbhayani/deckrun" target="_blank" rel="noopener noreferrer">deckrun</a></span>
+      <span class="th-foot__brand">powered by <a href="https://github.com/arpitbbhayani/slideup" target="_blank" rel="noopener noreferrer">slideup</a></span>
       <span class="th-foot__hint">Switch themes on the fly</span>
     </div>
   </div>
@@ -2764,7 +2764,7 @@ ${PRESENTER_CSS}
     <div id="help__grid"></div>
     <div id="help__foot">
       <span>Annotations are not saved to disk, and reset if the page reloads.</span>
-      <span>powered by <a href="https://github.com/arpitbbhayani/deckrun" target="_blank" rel="noopener noreferrer">deckrun</a></span>
+      <span>powered by <a href="https://github.com/arpitbbhayani/slideup" target="_blank" rel="noopener noreferrer">slideup</a></span>
     </div>
   </div>
 </div>
@@ -2796,8 +2796,8 @@ ${HIGHLIGHT_RUNTIME}
   // still render here, on the presenter chrome's palette. Read-only: this is
   // the presenting surface, not the editor, so selecting text here should
   // not offer to create a highlight. hl=... names whose highlights these are.
-  if (window.deckrunHighlights) {
-    window.deckrunHighlights.mount({
+  if (window.slideupHighlights) {
+    window.slideupHighlights.mount({
       frame: elFrame,
       docKey: new URLSearchParams(location.search).get('hl') || 'default',
       scopes: 'doc',
@@ -3202,7 +3202,7 @@ ${HIGHLIGHT_RUNTIME}
     } catch (e) {}
     updateThemePenColors();
     if (remember !== false) {
-      try { localStorage.setItem('deckrun.theme.v1', id); } catch (e) {}
+      try { localStorage.setItem('slideup.theme.v1', id); } catch (e) {}
     }
     if (themeCards.length) {
       themeCards.forEach(function (card) {

@@ -28,7 +28,7 @@ export interface OptionSummary<T extends string> {
 export const TEMPLATE_SPECS: Record<TemplateName, { label: string; blurb: string }> = {
   classic: {
     label: "Classic",
-    blurb: "The original balanced deckrun layout",
+    blurb: "The original balanced slideup layout",
   },
   minimal: {
     label: "Minimal",

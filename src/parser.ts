@@ -17,7 +17,7 @@ function escapeHtml(value: string): string {
 marked.use({
   extensions: [
     {
-      name: "deckrunBlockMath",
+      name: "slideupBlockMath",
       level: "block",
       tokenizer(src) {
         const dollars = /^\$\$[ \t]*\n?([\s\S]+?)\n?[ \t]*\$\$(?:[ \t]*(?:\n|$))/.exec(src);
@@ -25,7 +25,7 @@ marked.use({
         const match = dollars ?? brackets;
         if (!match) return;
         return {
-          type: "deckrunBlockMath",
+          type: "slideupBlockMath",
           raw: match[0],
           text: match[1].trim(),
           display: true,
@@ -36,7 +36,7 @@ marked.use({
       },
     },
     {
-      name: "deckrunInlineMath",
+      name: "slideupInlineMath",
       level: "inline",
       start(src) {
         const dollar = src.indexOf("$");
@@ -53,7 +53,7 @@ marked.use({
         const match = dollars ?? parens;
         if (!match) return;
         return {
-          type: "deckrunInlineMath",
+          type: "slideupInlineMath",
           raw: match[0],
           text: match[1],
           display: false,
@@ -64,7 +64,7 @@ marked.use({
       },
     },
     {
-      name: "deckrunRevealMarker",
+      name: "slideupRevealMarker",
       level: "inline",
       start(src) {
         const at = src.indexOf("{reveal}");
@@ -73,10 +73,10 @@ marked.use({
       tokenizer(src) {
         const match = /^\{reveal\}/.exec(src);
         if (!match) return;
-        return { type: "deckrunRevealMarker", raw: match[0] };
+        return { type: "slideupRevealMarker", raw: match[0] };
       },
       renderer() {
-        return '<span class="deckrun-fragment-marker" aria-hidden="true"></span>';
+        return '<span class="slideup-fragment-marker" aria-hidden="true"></span>';
       },
     },
   ],

@@ -707,7 +707,7 @@ export function themeSummaries(): ThemeSummary[] {
   });
 }
 
-/** One line per theme, for `deckrun --list-themes`. */
+/** One line per theme, for `slideup --list-themes`. */
 export function themeListing(): string[] {
   const pad = Math.max(...THEME_IDS.map((id) => id.length));
   return THEME_IDS.map((id) => {
@@ -1159,7 +1159,7 @@ export function fontSummaries(): FontSummary[] {
   }));
 }
 
-/** One line per face, for `deckrun --list-fonts`. */
+/** One line per face, for `slideup --list-fonts`. */
 export function fontListing(): string[] {
   const pad = Math.max(...FONT_IDS.map((id) => id.length));
   return FONT_IDS.map(

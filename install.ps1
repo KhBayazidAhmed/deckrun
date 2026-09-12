@@ -1,16 +1,16 @@
-# deckrun - one-command installer for Windows (PowerShell)
+# slideup - one-command installer for Windows (PowerShell)
 #
-#   irm https://raw.githubusercontent.com/arpitbbhayani/deckrun/master/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/arpitbbhayani/slideup/master/install.ps1 | iex
 #
-# Installs deckrun globally from npm. If Node.js (>= 16) is missing or too
+# Installs slideup globally from npm. If Node.js (>= 16) is missing or too
 # old, it installs the Node.js LTS (via winget when available, otherwise by
-# downloading the Node.js .msi), refreshes PATH, then installs deckrun.
+# downloading the Node.js .msi), refreshes PATH, then installs slideup.
 
 $ErrorActionPreference = 'Stop'
 
 $NodeMin = 16
 
-function Write-Info  { Write-Host "deckrun $args" -ForegroundColor Cyan }
+function Write-Info  { Write-Host "slideup $args" -ForegroundColor Cyan }
 function Write-Ok    { Write-Host "✓ $args" -ForegroundColor Green }
 function Write-Warn  { Write-Host "! $args" -ForegroundColor Yellow }
 
@@ -45,7 +45,7 @@ if ($ver) {
     if ($major -ge $NodeMin) {
         Write-Info "Node.js $ver detected."
     } else {
-        Write-Warn "Found Node.js $ver; deckrun needs >= $NodeMin."
+        Write-Warn "Found Node.js $ver; slideup needs >= $NodeMin."
         $ver = $null
     }
 }
@@ -102,20 +102,20 @@ if (-not $ver) {
     Write-Ok "Node.js $newVer installed."
 }
 
-# ── Install deckrun ──────────────────────────────────────────────────────
-Write-Info 'Installing deckrun globally via npm…'
-npm install -g deckrun
+# ── Install slideup ──────────────────────────────────────────────────────
+Write-Info 'Installing slideup globally via npm…'
+npm install -g slideup
 
 # ── Verify ───────────────────────────────────────────────────────────────
-if (Get-Command deckrun -ErrorAction SilentlyContinue) {
-    $dv = deckrun --version 2>$null
-    Write-Ok "deckrun $dv installed."
+if (Get-Command slideup -ErrorAction SilentlyContinue) {
+    $dv = slideup --version 2>$null
+    Write-Ok "slideup $dv installed."
     Write-Host ''
-    Write-Host "  deckrun           # open the editor" -ForegroundColor Cyan
-    Write-Host "  deckrun slides.md # present a local file" -ForegroundColor Cyan
-    Write-Host "  deckrun <url>     # present a public Markdown or HTML URL" -ForegroundColor Cyan
+    Write-Host "  slideup           # open the editor" -ForegroundColor Cyan
+    Write-Host "  slideup slides.md # present a local file" -ForegroundColor Cyan
+    Write-Host "  slideup <url>     # present a public Markdown or HTML URL" -ForegroundColor Cyan
     Write-Host ''
 } else {
-    Write-Warn 'deckrun was installed but is not on your PATH.'
-    Write-Warn 'Open a new terminal (or refresh your PATH) and run deckrun.'
+    Write-Warn 'slideup was installed but is not on your PATH.'
+    Write-Warn 'Open a new terminal (or refresh your PATH) and run slideup.'
 }

@@ -67,7 +67,7 @@ function bootstrapJson(
   return JSON.stringify(payload).replace(/</g, "\\u003c");
 }
 
-/** The Markdown editor served when `deckrun` is launched without a file. */
+/** The Markdown editor served when `slideup` is launched without a file. */
 export function generateEditorHtml(
   theme: ThemeName = DEFAULT_THEME,
   fontInput: { head?: string | null; body?: string | null } = {},
@@ -83,7 +83,7 @@ export function generateEditorHtml(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>deckrun · editor</title>
+  <title>slideup · editor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="${googleFontsHref()}" rel="stylesheet">
@@ -1142,7 +1142,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 <body>
 <div id="app">
   <header id="topbar">
-    <span id="brand">deckrun<span class="caret"></span></span>
+    <span id="brand">slideup<span class="caret"></span></span>
     <input id="docname" value="deck" spellcheck="false" title="Deck name, also the download filename">
     <button class="btn" id="btn-decks" title="Switch between the decks in this browser">decks <span id="deck-count">1</span> <kbd>Cmd O</kbd></button>
     <span class="spacer"></span>
@@ -1322,7 +1322,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   <div class="backdrop"></div>
   <div id="start-box">
     <div id="start-head">
-      <span id="brand">deckrun<span class="caret"></span></span>
+      <span id="brand">slideup<span class="caret"></span></span>
       <p>What are you making?</p>
     </div>
     <div id="start-cards">
@@ -1378,61 +1378,73 @@ ${HIGHLIGHT_RUNTIME}
   var MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
   var CMD = MAC ? 'Cmd' : 'Ctrl';
 
-  // The document deckrun was launched with (a file on disk or a fetched
+  // The document slideup was launched with (a file on disk or a fetched
   // URL). When set, the editor is backed by it instead of the browser
   // library: content comes from /__file, edits save back through it, and
   // external changes on disk arrive over /__events.
   var FILE = D.file || null;
 
   var K = {
-    index:   'deckrun.decks.v1',
-    deck:    'deckrun.deck.',
-    current: 'deckrun.current.v1',
-    theme:   'deckrun.theme.v1',
-    head:    'deckrun.font.head.v1',
-    body:    'deckrun.font.body.v1',
-    template:'deckrun.template.v1',
-    transition:'deckrun.transition.v1',
-    split:   'deckrun.split.v1',
-    mode:    'deckrun.mode.v1',
-    nudge:   'deckrun.nudges.v1',
+    index:   'slideup.decks.v1',
+    deck:    'slideup.deck.',
+    current: 'slideup.current.v1',
+    theme:   'slideup.theme.v1',
+    head:    'slideup.font.head.v1',
+    body:    'slideup.font.body.v1',
+    template:'slideup.template.v1',
+    transition:'slideup.transition.v1',
+    split:   'slideup.split.v1',
+    mode:    'slideup.mode.v1',
+    nudge:   'slideup.nudges.v1',
     // Superseded by the deck library, read once to migrate.
     oldDoc:  'presentmd.doc.v1',
     oldName: 'presentmd.name.v1'
   };
 
-  // present-md was renamed to deckrun — the whole storage namespace moves
-  // with it, so this copies it over once rather than orphaning every deck
-  // already saved under the old prefix.
-  var OLD_NS = {
-    index: 'presentmd.decks.v1', deck: 'presentmd.deck.', current: 'presentmd.current.v1',
-    theme: 'presentmd.theme.v1', head: 'presentmd.font.head.v1',
-    body: 'presentmd.font.body.v1', split: 'presentmd.split.v1', mode: 'presentmd.mode.v1',
-    nudge: 'presentmd.nudges.v1'
-  };
+  // slideup previously shipped as deckrun (and, before that, present-md).
+  // Copy the newest available namespace once so existing browser decks and
+  // preferences survive the rename.
+  var OLD_NAMESPACES = [
+    {
+      index: 'deckrun.decks.v1', deck: 'deckrun.deck.', current: 'deckrun.current.v1',
+      theme: 'deckrun.theme.v1', head: 'deckrun.font.head.v1', body: 'deckrun.font.body.v1',
+      template: 'deckrun.template.v1', transition: 'deckrun.transition.v1',
+      split: 'deckrun.split.v1', mode: 'deckrun.mode.v1', nudge: 'deckrun.nudges.v1'
+    },
+    {
+      index: 'presentmd.decks.v1', deck: 'presentmd.deck.', current: 'presentmd.current.v1',
+      theme: 'presentmd.theme.v1', head: 'presentmd.font.head.v1', body: 'presentmd.font.body.v1',
+      split: 'presentmd.split.v1', mode: 'presentmd.mode.v1', nudge: 'presentmd.nudges.v1'
+    }
+  ];
   (function migrateNamespace() {
     if (lsGet(K.index, null) !== null) return;
-    var oldIndexRaw = lsGet(OLD_NS.index, null);
-    if (oldIndexRaw === null) return;
-    lsSet(K.index, oldIndexRaw);
-    lsDel(OLD_NS.index);
-    try {
-      var oldIndex = JSON.parse(oldIndexRaw);
-      if (Object.prototype.toString.call(oldIndex) === '[object Array]') {
-        oldIndex.forEach(function (entry) {
-          if (!entry || !entry.id) return;
-          var content = lsGet(OLD_NS.deck + entry.id, null);
-          if (content !== null) {
-            lsSet(K.deck + entry.id, content);
-            lsDel(OLD_NS.deck + entry.id);
-          }
-        });
-      }
-    } catch (e) {}
-    ['current', 'theme', 'head', 'body', 'split', 'mode', 'nudge'].forEach(function (slot) {
-      var v = lsGet(OLD_NS[slot], null);
-      if (v !== null) { lsSet(K[slot], v); lsDel(OLD_NS[slot]); }
-    });
+    for (var n = 0; n < OLD_NAMESPACES.length; n++) {
+      var oldNs = OLD_NAMESPACES[n];
+      var oldIndexRaw = lsGet(oldNs.index, null);
+      if (oldIndexRaw === null) continue;
+      lsSet(K.index, oldIndexRaw);
+      lsDel(oldNs.index);
+      try {
+        var oldIndex = JSON.parse(oldIndexRaw);
+        if (Object.prototype.toString.call(oldIndex) === '[object Array]') {
+          oldIndex.forEach(function (entry) {
+            if (!entry || !entry.id) return;
+            var content = lsGet(oldNs.deck + entry.id, null);
+            if (content !== null) {
+              lsSet(K.deck + entry.id, content);
+              lsDel(oldNs.deck + entry.id);
+            }
+          });
+        }
+      } catch (e) {}
+      ['current', 'theme', 'head', 'body', 'template', 'transition', 'split', 'mode', 'nudge'].forEach(function (slot) {
+        if (!oldNs[slot]) return;
+        var v = lsGet(oldNs[slot], null);
+        if (v !== null) { lsSet(K[slot], v); lsDel(oldNs[slot]); }
+      });
+      return;
+    }
   })();
 
   function lsGet(k, fallback) {
@@ -1516,15 +1528,15 @@ ${HIGHLIGHT_RUNTIME}
 
   function updateDocTitle() {
     if ($('screen-start') && $('screen-start').classList.contains('is-on')) {
-      document.title = 'deckrun \u00b7 start';
+      document.title = 'slideup \u00b7 start';
       return;
     }
     if ($('library') && $('library').classList.contains('is-on')) {
-      document.title = 'deckrun \u00b7 library';
+      document.title = 'slideup \u00b7 library';
       return;
     }
     var name = ($('docname').value || '').trim();
-    document.title = name ? name + ' \u00b7 deckrun' : 'deckrun \u00b7 editor';
+    document.title = name ? name + ' \u00b7 slideup' : 'slideup \u00b7 editor';
   }
 
   /** One deck's metadata is refreshed from the editor on every save. */
@@ -1665,7 +1677,7 @@ ${HIGHLIGHT_RUNTIME}
   // notes panel mirror the deck's current slide, so the editor window is the
   // presenter's screen and the deck tab is the projector. No second window
   // is involved.
-  var FOLLOW_KEY = 'deckrun.presenter.session';
+  var FOLLOW_KEY = 'slideup.presenter.session';
   var followSid = null;
   try { followSid = sessionStorage.getItem(FOLLOW_KEY); } catch (e) {}
   if (!followSid) {
@@ -1675,7 +1687,7 @@ ${HIGHLIGHT_RUNTIME}
     try { sessionStorage.setItem(FOLLOW_KEY, followSid); } catch (e) {}
   }
   var followChan = (typeof BroadcastChannel !== 'undefined')
-    ? new BroadcastChannel('deckrun:' + followSid)
+    ? new BroadcastChannel('slideup:' + followSid)
     : null;
 
   var following = false;   // the editor is mirroring the deck right now
@@ -1739,15 +1751,15 @@ ${HIGHLIGHT_RUNTIME}
   }
 
   var hlSlides = null, hlDoc = null;
-  if (window.deckrunHighlights) {
+  if (window.slideupHighlights) {
     var onHighlightWarn = function (message) { toast(message, 'warn'); };
-    hlSlides = window.deckrunHighlights.mount({
+    hlSlides = window.slideupHighlights.mount({
       frame: frame,
       docKey: highlightKey(),
       scopes: 'slides',
       onWarn: onHighlightWarn
     });
-    hlDoc = window.deckrunHighlights.mount({
+    hlDoc = window.slideupHighlights.mount({
       frame: frameHtml,
       docKey: highlightKey(),
       scopes: 'doc',
@@ -2011,7 +2023,7 @@ ${HIGHLIGHT_RUNTIME}
   }
 
   // ── Parse round-trip: the server owns the Markdown, so what you see here
-  //    is byte-for-byte what deckrun file.md renders. ───────────────
+  //    is byte-for-byte what slideup file.md renders. ───────────────
   function refresh() {
     var mine = ++state.seq;
     if (state.inflight) state.inflight.abort();
@@ -3013,7 +3025,7 @@ ${HIGHLIGHT_RUNTIME}
   /** File mode owns the session: the browser library stays out of the way. */
   function fileModeBlocks() {
     if (!FILE) return false;
-    toast('Editing ' + FILE.name + ' — the browser library is available when deckrun runs without a file.', 'warn');
+    toast('Editing ' + FILE.name + ' — the browser library is available when slideup runs without a file.', 'warn');
     return true;
   }
 
@@ -3088,7 +3100,7 @@ ${HIGHLIGHT_RUNTIME}
     var list = loadIndex().filter(function (d) { return d.id !== id; });
     saveIndex(list);
     lsDel(K.deck + id);
-    if (window.deckrunHighlights) window.deckrunHighlights.forget('deck:' + id);
+    if (window.slideupHighlights) window.slideupHighlights.forget('deck:' + id);
 
     if (id === state.deckId) {
       if (list.length) {

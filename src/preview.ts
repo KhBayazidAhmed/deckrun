@@ -35,7 +35,7 @@ export const PREVIEW_HEIGHT = 900;
 
 /**
  * The document loaded into the editor's preview iframe. It carries the deck's
- * own stylesheet, so what the editor shows is what `deckrun file.md` renders.
+ * own stylesheet, so what the editor shows is what `slideup file.md` renders.
  * Slides arrive over postMessage; nothing is fetched or parsed in here.
  */
 export function generatePreviewHtml(
@@ -54,7 +54,7 @@ export function generatePreviewHtml(
 <html lang="en" data-theme="${initialTheme}" data-decor="${decorOf(initialTheme)}" data-template="${template}" data-transition="${transition}"${fontAttrs}>
 <head>
   <meta charset="UTF-8">
-  <title>preview · deckrun</title>
+  <title>preview · slideup</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="${googleFontsHref()}" rel="stylesheet">
@@ -226,9 +226,9 @@ ${RICH_CONTENT_RUNTIME}
     stage.innerHTML = slides[index] || '';
     var el = stage.querySelector('.slide');
     if (el) el.classList.add('is-active');
-    if (window.deckrunPrepareFragments) window.deckrunPrepareFragments(stage, true);
+    if (window.slideupPrepareFragments) window.slideupPrepareFragments(stage, true);
     highlight(stage);
-    var rich = window.deckrunRenderRichContent ? window.deckrunRenderRichContent(stage) : Promise.resolve();
+    var rich = window.slideupRenderRichContent ? window.slideupRenderRichContent(stage) : Promise.resolve();
     rich.then(function () { requestAnimationFrame(reportOverflow); });
   }
 
@@ -257,9 +257,9 @@ ${RICH_CONTENT_RUNTIME}
     });
     stage.appendChild(frag);
     scaleThumbs();
-    if (window.deckrunPrepareFragments) window.deckrunPrepareFragments(stage, true);
+    if (window.slideupPrepareFragments) window.slideupPrepareFragments(stage, true);
     highlight(stage);
-    var rich = window.deckrunRenderRichContent ? window.deckrunRenderRichContent(stage) : Promise.resolve();
+    var rich = window.slideupRenderRichContent ? window.slideupRenderRichContent(stage) : Promise.resolve();
     rich.then(scaleThumbs);
   }
 
