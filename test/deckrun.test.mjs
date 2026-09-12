@@ -13,7 +13,12 @@ import {
   TEMPLATE_CSS,
   TRANSITION_CSS,
 } from "../dist/presentation-options.js";
-import { richContentFeatures, richContentHead } from "../dist/rich-content.js";
+import {
+  richContentFeatures,
+  richContentHead,
+  RICH_CONTENT_CSS,
+  RICH_CONTENT_RUNTIME,
+} from "../dist/rich-content.js";
 import { lintMarkdown } from "../dist/lint.js";
 import { generateHtml, generateDocHtml } from "../dist/generate.js";
 import { generatePreviewHtml } from "../dist/preview.js";
@@ -93,6 +98,14 @@ test("Rich content detection and head tags work", () => {
   const cdnHead = richContentHead(feat2, "cdn");
   assert.ok(cdnHead.includes("cdn.jsdelivr.net/npm/katex"));
   assert.ok(cdnHead.includes("cdn.jsdelivr.net/npm/mermaid"));
+});
+
+test("Mermaid labels are protected from theme clipping", () => {
+  assert.ok(RICH_CONTENT_CSS.includes(".mermaid svg foreignObject"));
+  assert.ok(RICH_CONTENT_CSS.includes("overflow: visible !important"));
+  assert.ok(RICH_CONTENT_CSS.includes("line-height: 1.2 !important"));
+  assert.ok(RICH_CONTENT_RUNTIME.includes("useMaxWidth: true"));
+  assert.ok(RICH_CONTENT_RUNTIME.includes("htmlLabels: true"));
 });
 
 test("Linting catches errors and warnings properly", () => {
